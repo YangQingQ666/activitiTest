@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.flying.cattle.activiti.dao.MessageDao">
+
+    <resultMap type="com.flying.cattle.activiti.entity.Message" id="MessageMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="shenpeo" column="shenpeo" jdbcType="VARCHAR"/>
+        <result property="shijain" column="shijain" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="MessageMap">
+        select id,
+               shenpeo,
+               shijain
+        from message
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="MessageMap">
+        select id,
+               shenpeo,
+               shijain
+        from message
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="MessageMap">
+        select
+        id, shenpeo, shijain
+        from message
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="shenpeo != null and shenpeo != ''">
+                and shenpeo = #{shenpeo}
+            </if>
+            <if test="shijain != null and shijain != ''">
+                and shijain = #{shijain}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into message(shenpeo, shijain)
+        values (#{shenpeo}, #{shijain})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into message(shenpeo, shijain)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.shenpeo}, #{entity.shijain})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into message(shenpeo, shijain)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.shenpeo}, #{entity.shijain})
+        </foreach>
+        on duplicate key update
+        shenpeo = values(shenpeo) , shijain = values(shijain)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update message
+        <set>
+            <if test="shenpeo != null and shenpeo != ''">
+                shenpeo = #{shenpeo},
+            </if>
+            <if test="shijain != null and shijain != ''">
+                shijain = #{shijain},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete
+        from message
+        where id = #{id}
+    </delete>
+
+</mapper>
+
